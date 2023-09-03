@@ -1,0 +1,278 @@
+commit 96a80610b552eccc75c4db039b50befee9bd783f
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Sep 3 22:46:25 2023 +1000
+
+    Updated Gantt Chart + Tidied for Submission
+
+commit 5829ea1bf27b738c2985ffae90af13cc3cd8cdf4
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 17:56:35 2023 +1000
+
+    Create CaseDiagram.drawio
+
+commit 87722b478b8673dbb82890ab5da439369f270772
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 17:56:05 2023 +1000
+
+    Added Case Diagrams
+
+commit 711aeb65bf2f626b736911fe7533c09f43a8699a
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 16:36:50 2023 +1000
+
+    Updated Section 2.0 & 3.0
+
+commit 365d2b84b6bdac99bd7b54169d235f04d333481a
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 13:10:00 2023 +1000
+
+    Update RAM
+
+commit a83413ef4e3614108d6ad0f66a54fa62f28f5f00
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 12:51:53 2023 +1000
+
+    Create WBS.drawio
+
+commit a0c27dcdde8dfb508e6448a554d44c7690e290d4
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 12:38:55 2023 +1000
+
+    WBS diagram + Remaining estimations
+
+commit 0f73843e647d1ca906eeecdaae3d7c98c4b01fe8
+Merge: 54b117f fd968c8
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 12:34:09 2023 +1000
+
+    Merge branch 'main' of https://github.com/NathanaelGazzard/2810ICT-7810ICT-2023-Assignment
+
+commit 54b117f33f16f6b55431951cd3c45c7d94384cf2
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Sep 3 12:30:59 2023 +1000
+
+    WBS charted + Remaining estimations
+
+commit fd968c8c11f1b35e52c4240fbe87f163990ab735
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Sep 3 12:29:31 2023 +1000
+
+    Integrated Design Document Section 4
+
+commit 5fcff147db724a0ad192f7052bb8df2ff58f044e
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Sep 2 15:10:29 2023 +1000
+
+    Added System Vision to Design Doc
+
+commit 7b3a6deb4a601d077ca676c27f2d0e00b092cd13
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sat Sep 2 11:22:44 2023 +1000
+
+    Section 2 Draft
+
+commit ed04788aa27f1820160e246a424a801eba354c0b
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Fri Sep 1 09:29:57 2023 +1000
+
+    Added Gantt Chart to Project
+
+commit 585e9b38ca09446944881f20f1aff8cee90f0ef9
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Thu Aug 31 13:25:01 2023 +1000
+
+    Update Project Plan.docx
+
+commit 26e5b1c6d18b169fe537ddf073d0c180273fb280
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Thu Aug 31 13:24:59 2023 +1000
+
+    Updated Project Plan parts 1.1, 1.2, 1.3
+
+commit 61edaa3389aab5c976f28b988227ce91ad417e60
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Mon Aug 28 16:31:20 2023 +1000
+
+    Update Activity Descriptions (Zaib)
+
+commit f3696255cf84ddef0bd7a344c1550193b3513f99
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Mon Aug 28 12:54:45 2023 +1000
+
+    Added Software Design Document
+
+commit 79b214ae70037bf92ce2002df07943fa656e9911
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Mon Aug 28 10:42:37 2023 +1000
+
+    Sync data between WBS and AD&E
+
+commit 8326b56b04eaa7183565f86c2add0f3f6e76bca5
+Author: jahanzaib <jahanzaib2@griffithuni.edu.au>
+Date:   Thu Aug 24 13:51:14 2023 +1000
+
+    update project plan
+
+commit ff808ce83480ace05dfaf073ab9523c859748edf
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Thu Aug 24 10:27:52 2023 +1000
+
+    Draft of Activity Definition & Estimation
+
+commit 4f199fabfba2538f352004a5565bb90e05f4029f
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Tue Aug 22 17:30:40 2023 +1000
+
+    Added RAM chart
+
+commit 7824c8468c224e0c51c16761106dde3cb80774c0
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Tue Aug 22 11:55:08 2023 +1000
+
+    Very basic draft layout for WBS
+
+commit e1cd0c33490a50ff528effc3e413c10eca55d899
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Tue Aug 22 10:51:09 2023 +1000
+
+    Update Students.txt
+    
+    Added S number / test commit
+
+commit 7fa45f6ef38d5be607eb3dfe9bbf39d514719ae8
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Tue Aug 22 10:29:32 2023 +1000
+
+    Added Stephen's Name/sNum to Docs
+
+commit b12f416c55df7d786f3c6b08f918eba30fa55aec
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Mon Aug 21 14:48:20 2023 +1000
+
+    Nate added sNumber & Name to Docs
+
+commit d44dca3f607b90a868191416ea695d86cbdcfe15
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Fri Aug 18 14:59:51 2023 +1000
+
+    Cloned Repo and Pushed to Fork
+
+commit b2139c22c5feadbcee69e5e6e69eef5dbc9f4d3b
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 18 18:24:09 2023 +1000
+
+    Update README.md
+
+commit 2e31a553e7341e2a4c6b0d09f574c8b362e05521
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:33:04 2023 +1000
+
+    Update README.md
+
+commit 030b2c8fee6cb4829295dd90fc721c1a7ac56088
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:27:04 2023 +1000
+
+    Update README.md
+
+commit e6ab6fdc5da828040639c64d3748e81112efbe78
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:22:38 2023 +1000
+
+    Update README.md
+
+commit a65a169d4007ba0335fc19ac5405ced201e4b6df
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:20:41 2023 +1000
+
+    Update README.md
+
+commit 41306832e9735e7410025cdd41cf9b8982703a9a
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:18:51 2023 +1000
+
+    Update README.md
+
+commit 3c7da81f7198d815ae641f078b426545a6728588
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:18:10 2023 +1000
+
+    Update README.md
+
+commit 7610f13b8742f7ae725665f0f33cd7cb34d89c98
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:16:23 2023 +1000
+
+    Update README.md
+
+commit f722eb9ffcd648583bfd1eeba46c2759f095d117
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:15:54 2023 +1000
+
+    Update README.md
+
+commit b3d3a92072329a0f0acd80e60baf40155059885f
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 17:13:41 2023 +1000
+
+    Update README.md
+
+commit 8e13ca6d0e98e0837ae1ab438ec021b16cf51117
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Tue Jul 4 15:49:48 2023 +1000
+
+    Update README.md
+
+commit 3fc7ec24c8f6c2f4618f66a06f833fcbfdbe40aa
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Mon Jul 3 14:19:49 2023 +1000
+
+    Update README.md
+
+commit de25a51c800f71fc06137d6166f006afff70e68a
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Mon Jul 3 13:47:36 2023 +1000
+
+    Update README.md
+
+commit e23971f1fe6bf8780a5c811d3d6d392467545bae
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Mon Jul 3 13:43:11 2023 +1000
+
+    Update README.md
+
+commit 45406114ea5a616f93f2e4c90f7ff651f3d7b653
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Mon Jul 3 13:41:18 2023 +1000
+
+    Update README.md
+
+commit aef1b2460bb41f2a77d8a9132c6ba4240b6f6842
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Wed Jun 28 18:40:20 2023 +1000
+
+    Update README.md
+
+commit f188287514d01b4bd893fbd3f60a895a7b327ec5
+Author: Kevin <136687484+2810ICT-7810ICT-Assignment@users.noreply.github.com>
+Date:   Thu Jun 15 18:19:23 2023 +1000
+
+    Update README.md
+
+commit 5c3e04f360229f9a16308c0f5887eca5350b06e0
+Author: Kevin <136687484+KevinFromGU@users.noreply.github.com>
+Date:   Thu Jun 15 18:16:10 2023 +1000
+
+    Add files via upload
+
+commit 1ccd65aeaa87a951181f56890e9c38444a34224a
+Author: Kevin <136687484+KevinFromGU@users.noreply.github.com>
+Date:   Thu Jun 15 18:13:40 2023 +1000
+
+    Update README.md
+
+commit 48a897bffeae90f026df9103fe79efe505c530cd
+Author: Kevin <136687484+KevinFromGU@users.noreply.github.com>
+Date:   Thu Jun 15 18:12:15 2023 +1000
+
+    Add files via upload
