@@ -1,16 +1,18 @@
 import wx
 import wx.xrc
 import wx.adv
+import wx.grid
 import pandas as pd
 
 pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
 restaurant_data['INSPECTION DATE'] = pd.to_datetime(restaurant_data['INSPECTION DATE'])
 
-# these variables will be used globally for accessing data, form values etc
+# These variables will be used globally for accessing data, form values, etc.
 data = None
 current_query_number = None
 current_frame = None
+
 
 def set_visibility():
     if data is None:
@@ -59,7 +61,6 @@ def view_current_query(event):
     current_frame.Hide()
     results_frame = ResultsFrame(current_frame)
     results_frame.Show()
-    results_frame.m_staticText_data.SetLabel(data.to_string())
     event.Skip()
 
 
@@ -75,11 +76,9 @@ def run_query(event):
         global data
         data = query_0()
 
-    print(data.to_string())
     current_frame.Hide()
     results_frame = ResultsFrame(current_frame)
     results_frame.Show()
-    results_frame.m_staticText_data.SetLabel(data[['BORO', 'ZIPCODE', 'INSPECTION DATE']].head(100).to_string())
     event.Skip()
 
 
@@ -91,13 +90,12 @@ def return_to_home_frame(event, results_frame, home_frame):
 
 
 class HomeFrame(wx.Frame):
-
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Project Title Here", pos=wx.DefaultPosition,
                           size=wx.Size(1500, 900),
                           style=wx.CLOSE_BOX | wx.DEFAULT_FRAME_STYLE | wx.MINIMIZE_BOX | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHints(wx.Size(1500, 900), wx.Size(1500, 900))
+        self.SetSizeHints(wx.Size(1500, 900), wx.Size(-1, -1))
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
 
@@ -116,7 +114,6 @@ class HomeFrame(wx.Frame):
         self.m_label_startDate.Wrap(-1)
         bSizer1.Add(self.m_label_startDate, 0, wx.ALL, 5)
 
-        # Set the default value for the start date picker (e.g., January 1, 2023)
         default_start_date = wx.DateTime()
         default_start_date.ParseDate("01/01/2017")
         self.m_datePicker_start = wx.adv.DatePickerCtrl(self, wx.ID_ANY, default_start_date, wx.DefaultPosition,
@@ -127,7 +124,6 @@ class HomeFrame(wx.Frame):
         self.m_label_endDate.Wrap(-1)
         bSizer1.Add(self.m_label_endDate, 0, wx.ALL, 5)
 
-        # Set the default value for the end date picker (e.g., December 31, 2023)
         default_end_date = wx.DateTime()
         default_end_date.ParseDate("10/01/2017")
         self.m_datePicker_end = wx.adv.DatePickerCtrl(self, wx.ID_ANY, default_end_date, wx.DefaultPosition,
@@ -152,7 +148,6 @@ class HomeFrame(wx.Frame):
         global current_frame
         current_frame = self
 
-        # Connect Events
         self.m_button_currentQuery.Bind(wx.EVT_BUTTON, view_current_query)
         self.m_choice1.Bind(wx.EVT_CHOICE, change_query_form)
         self.m_button_runQuery.Bind(wx.EVT_BUTTON, run_query)
@@ -162,13 +157,12 @@ class HomeFrame(wx.Frame):
 
 
 class ResultsFrame(wx.Frame):
-
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Project Title Here", pos=wx.DefaultPosition,
                           size=wx.Size(1500, 900),
                           style=wx.CLOSE_BOX | wx.DEFAULT_FRAME_STYLE | wx.MINIMIZE_BOX | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHints(wx.Size(1500, 900), wx.Size(1500, 900))
+        self.SetSizeHints(wx.Size(1500, 900), wx.Size(-1, -1))
 
         bSizer6 = wx.BoxSizer(wx.VERTICAL)
 
@@ -180,21 +174,42 @@ class ResultsFrame(wx.Frame):
                                      wx.TAB_TRAVERSAL)
         bSizer3 = wx.BoxSizer(wx.VERTICAL)
 
-        self.m_staticText_data = wx.StaticText(self.m_panel_data, wx.ID_ANY, u"MyLabel", wx.DefaultPosition,
-                                               wx.DefaultSize, 0)
-        self.m_staticText_data.Wrap(-1)
+        # Create a wx.ListCtrl to replace the wx.grid.Grid
+        self.m_listCtrl = wx.ListCtrl(self.m_panel_data, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
+                                      wx.LC_REPORT | wx.BORDER_NONE)
 
-        self.m_staticText_data.SetLabel("No Data")
+        # Add columns to the ListCtrl
+        self.m_listCtrl.InsertColumn(0, "CAMIS")
+        self.m_listCtrl.InsertColumn(1, "DBA")
+        self.m_listCtrl.InsertColumn(2, "BORO")
+        self.m_listCtrl.InsertColumn(3, "BUILDING")
+        self.m_listCtrl.InsertColumn(4, "STREET")
+        self.m_listCtrl.InsertColumn(5, "ZIPCODE")
+        self.m_listCtrl.InsertColumn(6, "PHONE")
+        self.m_listCtrl.InsertColumn(7, "CUISINE DESCRIPTION")
+        self.m_listCtrl.InsertColumn(8, "INSPECTION DATE")
+        self.m_listCtrl.InsertColumn(9, "ACTION")
+        self.m_listCtrl.InsertColumn(10, "VIOLATION CODE")
+        self.m_listCtrl.InsertColumn(11, "VIOLATION DESCRIPTION")
+        self.m_listCtrl.InsertColumn(12, "CRITICAL FLAG")
+        self.m_listCtrl.InsertColumn(13, "SCORE")
+        self.m_listCtrl.InsertColumn(14, "GRADE")
+        self.m_listCtrl.InsertColumn(15, "GRADE DATE")
+        self.m_listCtrl.InsertColumn(16, "RECORD DATE")
+        self.m_listCtrl.InsertColumn(17, "INSPECTION TYPE")
 
-        bSizer3.Add(self.m_staticText_data, 0, wx.ALL, 5)
+        for i in range(30):
+            self.m_listCtrl.InsertItem(i, "")  # Insert an empty row
+
+        bSizer3.Add(self.m_listCtrl, 1, wx.EXPAND | wx.ALL, 5)
 
         self.m_panel_data.SetSizer(bSizer3)
         self.m_panel_data.Layout()
         bSizer3.Fit(self.m_panel_data)
-        self.m_notebook_results.AddPage(self.m_panel_data, u"Query Result Data", True)
-        self.m_panel_visualisation = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                                               wx.TAB_TRAVERSAL)
-        self.m_notebook_results.AddPage(self.m_panel_visualisation, u"Query Result Visualisation", False)
+        self.m_notebook_results.AddPage(self.m_panel_data, u"a page", True)
+        self.m_panel_visualization = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
+                                              wx.TAB_TRAVERSAL)
+        self.m_notebook_results.AddPage(self.m_panel_visualization, u"a page", False)
 
         bSizer6.Add(self.m_notebook_results, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -203,7 +218,6 @@ class ResultsFrame(wx.Frame):
 
         self.Centre(wx.BOTH)
 
-        # Connect Events
         self.m_button_newQuery.Bind(wx.EVT_BUTTON, lambda event: return_to_home_frame(event, self, home_frame))
 
     def __del__(self):
