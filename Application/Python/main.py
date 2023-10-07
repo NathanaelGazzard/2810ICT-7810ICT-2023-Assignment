@@ -7,33 +7,27 @@ pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
 restaurant_data['INSPECTION DATE'] = pd.to_datetime(restaurant_data['INSPECTION DATE'])
 
-# this is the var that will contain the most recent query data
-data = 0
-def query_0(start_date, end_date):
-    start_date = pd.to_datetime(start_date)
-    end_date = pd.to_datetime(end_date)
+# these variables will be used globally for accessing data, form values etc
+data = None
+current_query_number = None
+current_frame = None
 
-    filtered_data = restaurant_data[
-        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
-    return filtered_data
+def set_visibility():
+    if data is None:
+        current_frame.m_button_currentQuery.Hide()
+    else:
+        current_frame.m_button_currentQuery.Show()
 
-
-def view_current_query(event, current_frame):
-    current_frame.Hide()
-    results_frame = ResultsFrame(current_frame)
-    results_frame.Show()
-    event.Skip()
-
-
-def change_query_form(event, current_frame, selected_option_index):
-    if selected_option_index == 0:
+    if current_frame is None:
+        return
+    elif current_query_number == 0:
         current_frame.m_label_startDate.Show()
         current_frame.m_datePicker_start.Show()
         current_frame.m_label_endDate.Show()
         current_frame.m_datePicker_end.Show()
         current_frame.m_label_keyword.Hide()
         current_frame.m_text_keyword.Hide()
-    elif selected_option_index == 1 or selected_option_index == 3 or selected_option_index == 4:
+    elif current_query_number == 1 or current_query_number == 3 or current_query_number == 4:
         current_frame.m_label_startDate.Hide()
         current_frame.m_datePicker_start.Hide()
         current_frame.m_label_endDate.Hide()
@@ -47,29 +41,52 @@ def change_query_form(event, current_frame, selected_option_index):
         current_frame.m_datePicker_end.Show()
         current_frame.m_label_keyword.Show()
         current_frame.m_text_keyword.Show()
+        return
 
-    event.Skip()
+
+def query_0():
+    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
+    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    filtered_data = restaurant_data[
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+    return filtered_data
 
 
-def run_query(event, current_frame, start_date_picker, end_date_picker):
-    print("got this far")
-
-    s_date = start_date_picker.FormatDate()
-    e_date = end_date_picker.FormatDate()
-
-    if current_frame.m_choice1.GetSelection() == 0:
-        data = query_0(s_date, e_date)
-
-    print(data.to_string())
-    print("fin")
+def view_current_query(event):
     current_frame.Hide()
     results_frame = ResultsFrame(current_frame)
     results_frame.Show()
+    results_frame.m_staticText_data.SetLabel(data.to_string())
     event.Skip()
+
+
+def change_query_form(event):
+    global current_query_number
+    current_query_number = current_frame.m_button_currentQuery.GetValue()
+    set_visibility()
+    event.Skip()
+
+
+def run_query(event):
+    if current_frame.m_choice1.GetSelection() == 0:
+        global data
+        data = query_0()
+
+    print(data.to_string())
+    current_frame.Hide()
+    results_frame = ResultsFrame(current_frame)
+    results_frame.Show()
+    results_frame.m_staticText_data.SetLabel(data[['BORO', 'ZIPCODE', 'INSPECTION DATE']].head(100).to_string())
+    event.Skip()
+
 
 def return_to_home_frame(event, results_frame, home_frame):
     results_frame.Close()
     home_frame.Show()
+    set_visibility()
     event.Skip()
 
 
@@ -77,10 +94,10 @@ class HomeFrame(wx.Frame):
 
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Project Title Here", pos=wx.DefaultPosition,
-                          size=wx.Size(1000, 600),
+                          size=wx.Size(1500, 900),
                           style=wx.CLOSE_BOX | wx.DEFAULT_FRAME_STYLE | wx.MINIMIZE_BOX | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHints(wx.Size(1000, 600), wx.Size(1000, 600))
+        self.SetSizeHints(wx.Size(1500, 900), wx.Size(1500, 900))
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
 
@@ -132,25 +149,26 @@ class HomeFrame(wx.Frame):
 
         self.Centre(wx.BOTH)
 
-        # Connect Events
-        self.m_button_currentQuery.Bind(wx.EVT_BUTTON, lambda event: view_current_query(event, self))
-        self.m_choice1.Bind(wx.EVT_CHOICE, lambda event: change_query_form(event, self, self.m_choice1.GetSelection()))
-        self.m_button_runQuery.Bind(wx.EVT_BUTTON, lambda event: run_query(event, self, self.m_datePicker_start.GetValue(), self.m_datePicker_end.GetValue()))
+        global current_frame
+        current_frame = self
 
+        # Connect Events
+        self.m_button_currentQuery.Bind(wx.EVT_BUTTON, view_current_query)
+        self.m_choice1.Bind(wx.EVT_CHOICE, change_query_form)
+        self.m_button_runQuery.Bind(wx.EVT_BUTTON, run_query)
 
     def __del__(self):
         pass
-
 
 
 class ResultsFrame(wx.Frame):
 
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Project Title Here", pos=wx.DefaultPosition,
-                          size=wx.Size(1000, 600),
+                          size=wx.Size(1500, 900),
                           style=wx.CLOSE_BOX | wx.DEFAULT_FRAME_STYLE | wx.MINIMIZE_BOX | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHints(wx.Size(1000, 600), wx.Size(1000, 600))
+        self.SetSizeHints(wx.Size(1500, 900), wx.Size(1500, 900))
 
         bSizer6 = wx.BoxSizer(wx.VERTICAL)
 
@@ -160,10 +178,23 @@ class ResultsFrame(wx.Frame):
         self.m_notebook_results = wx.Notebook(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0)
         self.m_panel_data = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                                      wx.TAB_TRAVERSAL)
-        self.m_notebook_results.AddPage(self.m_panel_data, u"a page", False)
-        self.m_panel_visualization = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                                              wx.TAB_TRAVERSAL)
-        self.m_notebook_results.AddPage(self.m_panel_visualization, u"a page", True)
+        bSizer3 = wx.BoxSizer(wx.VERTICAL)
+
+        self.m_staticText_data = wx.StaticText(self.m_panel_data, wx.ID_ANY, u"MyLabel", wx.DefaultPosition,
+                                               wx.DefaultSize, 0)
+        self.m_staticText_data.Wrap(-1)
+
+        self.m_staticText_data.SetLabel("No Data")
+
+        bSizer3.Add(self.m_staticText_data, 0, wx.ALL, 5)
+
+        self.m_panel_data.SetSizer(bSizer3)
+        self.m_panel_data.Layout()
+        bSizer3.Fit(self.m_panel_data)
+        self.m_notebook_results.AddPage(self.m_panel_data, u"Query Result Data", True)
+        self.m_panel_visualisation = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
+                                               wx.TAB_TRAVERSAL)
+        self.m_notebook_results.AddPage(self.m_panel_visualisation, u"Query Result Visualisation", False)
 
         bSizer6.Add(self.m_notebook_results, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -181,6 +212,7 @@ class ResultsFrame(wx.Frame):
 
 if __name__ == "__main__":
     app = wx.App()
-    home_frame = HomeFrame(None)  # Create an instance of HomeFrame
+    home_frame = HomeFrame(None)
     home_frame.Show()
+    set_visibility()
     app.MainLoop()

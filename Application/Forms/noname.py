@@ -7,9 +7,11 @@
 ## PLEASE DO *NOT* EDIT THIS FILE!
 ###########################################################################
 
+from forward_declare import forward_declare
 import wx
 import wx.xrc
 import wx.adv
+import wx.grid
 
 ###########################################################################
 ## Class home_frame
@@ -18,9 +20,9 @@ import wx.adv
 class home_frame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Project Title Here", pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Project Title Here", pos = wx.DefaultPosition, size = wx.Size( 1500,900 ), style = wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
 
-		self.SetSizeHints( wx.Size( 1000,600 ), wx.Size( 1000,600 ) )
+		self.SetSizeHints( wx.Size( 1500,900 ), wx.Size( 1500,900 ) )
 
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
 
@@ -92,9 +94,9 @@ class home_frame ( wx.Frame ):
 class results ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Project Title Here", pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Project Title Here", pos = wx.DefaultPosition, size = wx.Size( 1500,900 ), style = wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
 
-		self.SetSizeHints( wx.Size( 1000,600 ), wx.Size( 1000,600 ) )
+		self.SetSizeHints( wx.Size( 1500,900 ), wx.Size( 1500,900 ) )
 
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
 
@@ -102,10 +104,60 @@ class results ( wx.Frame ):
 		bSizer6.Add( self.m_button_newQuery, 0, wx.ALL, 5 )
 
 		self.m_notebook_results = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_panel_data = wx.Panel( self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.m_notebook_results.AddPage( self.m_panel_data, u"a page", False )
+		self.m_panel_data = forward_declare( self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer3 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_grid3 = wx.grid.Grid( self.m_panel_data, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+
+		# Grid
+		self.m_grid3.CreateGrid( 1, 18 )
+		self.m_grid3.EnableEditing( True )
+		self.m_grid3.EnableGridLines( True )
+		self.m_grid3.EnableDragGridSize( False )
+		self.m_grid3.SetMargins( 0, 0 )
+
+		# Columns
+		self.m_grid3.AutoSizeColumns()
+		self.m_grid3.EnableDragColMove( False )
+		self.m_grid3.EnableDragColSize( True )
+		self.m_grid3.SetColLabelValue( 0, u"CAMIS" )
+		self.m_grid3.SetColLabelValue( 1, u"DBA" )
+		self.m_grid3.SetColLabelValue( 2, u"BORO" )
+		self.m_grid3.SetColLabelValue( 3, u"BUILDING" )
+		self.m_grid3.SetColLabelValue( 4, u"STREET" )
+		self.m_grid3.SetColLabelValue( 5, u"ZIPCODE" )
+		self.m_grid3.SetColLabelValue( 6, u"PHONE" )
+		self.m_grid3.SetColLabelValue( 7, u"CUISINE DESCRIPTION" )
+		self.m_grid3.SetColLabelValue( 8, u"INSPECTION DATE" )
+		self.m_grid3.SetColLabelValue( 9, u"ACTION" )
+		self.m_grid3.SetColLabelValue( 10, u"VIOLATION CODE" )
+		self.m_grid3.SetColLabelValue( 11, u"VIOLATION DESCRIPTION" )
+		self.m_grid3.SetColLabelValue( 12, u"CRITICAL FLAG" )
+		self.m_grid3.SetColLabelValue( 13, u"SCORE" )
+		self.m_grid3.SetColLabelValue( 14, u"GRADE" )
+		self.m_grid3.SetColLabelValue( 15, u"GRADE DATE" )
+		self.m_grid3.SetColLabelValue( 16, u"RECORD DATE" )
+		self.m_grid3.SetColLabelValue( 17, u"INSPECTION TYPE" )
+		self.m_grid3.SetColLabelValue( 18, wx.EmptyString )
+		self.m_grid3.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Rows
+		self.m_grid3.EnableDragRowSize( True )
+		self.m_grid3.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Label Appearance
+
+		# Cell Defaults
+		self.m_grid3.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
+		bSizer3.Add( self.m_grid3, 0, wx.ALL, 5 )
+
+
+		self.m_panel_data.SetSizer( bSizer3 )
+		self.m_panel_data.Layout()
+		bSizer3.Fit( self.m_panel_data )
+		self.m_notebook_results.AddPage( self.m_panel_data, u"a page", True )
 		self.m_panel_visualtization = wx.Panel( self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.m_notebook_results.AddPage( self.m_panel_visualtization, u"a page", True )
+		self.m_notebook_results.AddPage( self.m_panel_visualtization, u"a page", False )
 
 		bSizer6.Add( self.m_notebook_results, 1, wx.EXPAND |wx.ALL, 5 )
 
