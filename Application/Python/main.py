@@ -76,9 +76,44 @@ def run_query(event):
         global data
         data = query_0()
 
+    # remove any rows from the view. loop through data and generate row for each.
+    print(len(data))
+
     current_frame.Hide()
     results_frame = ResultsFrame(current_frame)
     results_frame.Show()
+
+    print(data.head())  # Print the first few rows of the DataFrame
+    print(data['CAMIS'])  # Print just the 'CAMIS' column
+
+    for index, row in data.iterrows():
+        item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
+        results_frame.m_listCtrl.SetItem(item_index, 1, str(row['DBA']))
+        results_frame.m_listCtrl.SetItem(item_index, 2, str(row['BORO']))
+        results_frame.m_listCtrl.SetItem(item_index, 3, str(row['BUILDING']))
+        results_frame.m_listCtrl.SetItem(item_index, 4, str(row['STREET']))
+        results_frame.m_listCtrl.SetItem(item_index, 5, str(row['ZIPCODE']))
+        results_frame.m_listCtrl.SetItem(item_index, 6, str(row['PHONE']))
+        results_frame.m_listCtrl.SetItem(item_index, 7, str(row['CUISINE DESCRIPTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 8, str(row['INSPECTION DATE']))
+        results_frame.m_listCtrl.SetItem(item_index, 9, str(row['ACTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 10, str(row['VIOLATION CODE']))
+        results_frame.m_listCtrl.SetItem(item_index, 11, str(row['VIOLATION DESCRIPTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 12, str(row['CRITICAL FLAG']))
+        results_frame.m_listCtrl.SetItem(item_index, 13, str(row['SCORE']))
+        
+        if pd.isna(row['GRADE']):
+            results_frame.m_listCtrl.SetItem(item_index, 14, '')
+        else:
+            results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
+        if pd.isna(row['GRADE DATE']):
+            results_frame.m_listCtrl.SetItem(item_index, 15, '')
+        else:
+            results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
+
+        results_frame.m_listCtrl.SetItem(item_index, 16, str(row['RECORD DATE']))
+        results_frame.m_listCtrl.SetItem(item_index, 17, str(row['INSPECTION TYPE']))
+
     event.Skip()
 
 
@@ -198,8 +233,8 @@ class ResultsFrame(wx.Frame):
         self.m_listCtrl.InsertColumn(16, "RECORD DATE")
         self.m_listCtrl.InsertColumn(17, "INSPECTION TYPE")
 
-        for i in range(30):
-            self.m_listCtrl.InsertItem(i, "")  # Insert an empty row
+        # for i in range(30):
+        #    self.m_listCtrl.InsertItem(i, "")  # Insert an empty row
 
         bSizer3.Add(self.m_listCtrl, 1, wx.EXPAND | wx.ALL, 5)
 
