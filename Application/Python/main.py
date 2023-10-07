@@ -1,6 +1,7 @@
 import wx
 import wx.xrc
 import wx.adv
+import pandas as pd
 
 def view_current_query(event, current_frame):
     current_frame.Hide()
