@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
+
 pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
 restaurant_data['INSPECTION DATE'] = pd.to_datetime(restaurant_data['INSPECTION DATE'])
@@ -148,20 +149,18 @@ def query_2(keyword):
          restaurant_data['CUISINE DESCRIPTION'].str.contains(keyword, case=False, na=False) |
          restaurant_data['VIOLATION DESCRIPTION'].str.contains(keyword, case=False, na=False))]
 
-    # Create figures for query 2
+
     figures.clear()
 
-    # Figure 1: Number of Violations per DBA
-    dba_violation_counts = filtered_data['DBA'].value_counts().nlargest(10)  # Top 10 DBAs with most violations
+    dba_violation_counts = filtered_data['DBA'].value_counts().nlargest(10)
     fig1, ax1 = plt.subplots(figsize=(10, 6))
     ax1.barh(dba_violation_counts.index, dba_violation_counts.values)
     ax1.set_xlabel('Number of Violations')
     ax1.set_ylabel('DBA')
     ax1.set_title('Top 10 DBAs with Most Violations')
-    ax1.invert_yaxis()  # Invert y-axis for readability
+    ax1.invert_yaxis()
     figures.append(fig1)
 
-    # Figure 2: Frequency of Violations by BORO Over Time
     suburb_violation_counts = filtered_data.groupby(['BORO', 'INSPECTION DATE']).size().reset_index(name='COUNT')
     fig2, ax2 = plt.subplots(figsize=(10, 6))
     for boro, data in suburb_violation_counts.groupby('BORO'):
@@ -249,7 +248,7 @@ def query_4(n=3):
 
     figures.clear()
 
-    borough_data_frames = []  # Create an empty list to store DataFrames for each borough
+    borough_data_frames = []
 
     for boro in filtered_data_copy['BORO'].unique():
         boro_data = filtered_data_copy[filtered_data_copy['BORO'] == boro].copy()
@@ -262,7 +261,6 @@ def query_4(n=3):
 
         top_10_results = pd.concat([top_10_results, top_10_boro_data])
 
-        # Create a line plot for this borough
         fig, ax = plt.subplots(figsize=(8, 6))
         for dba, scores in top_10_boro_data.groupby('DBA'):
             ax.plot(scores['INSPECTION DATE'], scores['SCORE'], label=dba)
@@ -271,10 +269,8 @@ def query_4(n=3):
         ax.set_title(f'Top {n} Scores Over Time in {boro}')
         ax.legend()
 
-        # Append the figure to the global list of figures
         figures.append(fig)
 
-        # Append the DataFrame for this borough to the list
         borough_data_frames.append(top_10_boro_data)
 
     top_10_results.drop(columns=['SCORE_DIFF'], inplace=True)
@@ -344,6 +340,7 @@ class HomeFrame(wx.Frame):
         self.m_choice1 = wx.Choice(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_choice1Choices, 0)
         self.m_choice1.SetSelection(0)
         bSizer1.Add(self.m_choice1, 0, wx.ALL, 5)
+
 
         self.m_label_startDate = wx.StaticText(self, wx.ID_ANY, u"Start Date", wx.DefaultPosition, wx.DefaultSize, 0)
         self.m_label_startDate.Wrap(-1)
