@@ -1,3 +1,148 @@
+commit ad8d3d8113de91a6e38458031a5a3be72c58f319
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 22:38:29 2023 +1000
+
+    Final Edits
+
+commit d3b43064e020242151a3c56481a1d5005c7a6e68
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 22:33:30 2023 +1000
+
+    Update Zaib's Content
+
+commit f319f707d94797dd8762e813813561e2d23e56c7
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 22:32:59 2023 +1000
+
+    User Manual Final Upadate
+
+commit 96998b95f8bd7517cabd310186a4dfcd52f81cd6
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 22:13:03 2023 +1100
+
+    Finalized Python Application
+    
+    All functionality implemented.
+
+commit 245843fe159b3f8063138ca603670b12b5e3e939
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 21:17:15 2023 +1100
+
+    Updated Python Project
+    
+    Each query now returns data and visualization.
+
+commit 4ae80d6dd50fd4d58ba67000a7523d105ddaede6
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 18:58:58 2023 +1000
+
+    Part-B Gantt Chart
+
+commit ee799493502b2c379b6835d665c18532f3a1c2ac
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 18:58:22 2023 +1000
+
+    Project Plan Part-B Update
+
+commit 63cd6fea6faefe8b47c239f7657ba1281ca6fd6a
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 15:55:21 2023 +1000
+
+    Update User Manual Draft
+
+commit 6fa3c58e6d4d7f2f4982153c8d1839207e0732fb
+Merge: cca1324 fbcf0ff
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 15:35:33 2023 +1000
+
+    Merge branch 'main' of https://github.com/NathanaelGazzard/2810ICT-7810ICT-2023-Assignment
+
+commit cca132439ff57c605e6919e956af0650688f08ce
+Author: Steve <stephen.urquhart@griffithuni.edu.au>
+Date:   Sun Oct 8 15:35:23 2023 +1000
+
+    Add User Manual + ES Draft
+
+commit fbcf0ff031a27496ec0f627600e4e89aec51d98e
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 16:23:17 2023 +1100
+
+    Updated Python Project
+    
+    Implemented the framework for dynamically inserting figures into the data visualization window.
+    Implemented test figures in query_0 (first query).
+    Figures do not use actual data yet.
+
+commit 4431a79b0c2fc60b6fae335a3fa21053fe2bed64
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 15:38:26 2023 +1100
+
+    Minor Tweaks to Python Project
+
+commit bc9d1144c68eeb6eec3ba92cc46f3d7ec7465d84
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 14:09:10 2023 +1100
+
+    Updated Python Project
+    
+    All 5 queries now return the expected data.
+
+commit 1373ed5c4f03c13684cf484d0004857735d358ee
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 11:03:08 2023 +1100
+
+    Update Python Project
+    
+    First 3 queries now return the correct data.
+
+commit c8249fb7baf64176744680f31ac8082c82f15860
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Oct 8 10:11:57 2023 +1100
+
+    Updated Python Project
+    
+    Results from query 1 are now displayed on the results window
+
+commit 476cd0f74af7452af0c1b62bc2f7393b12b3b393
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Oct 7 21:28:17 2023 +1100
+
+    Updated Python Project
+    
+    Completed the form structure for displaying query results. Have not implemented populating results yet.
+
+commit 805cf953e93262e26b290f2ef831ed6e983c8cae
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Oct 7 20:35:21 2023 +1100
+
+    Python project update
+    
+    Query 1 now prints the query results to the console.
+
+commit b606fa5120a61db980a8ea77c6d024f6a4979fae
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Oct 7 13:41:43 2023 +1100
+
+    Added Draft of first query
+
+commit f985a41fb1bc0df2163a7ae4c00ef9d499b4082b
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Oct 7 12:05:11 2023 +1100
+
+    Installed Pandas
+
+commit 33084318c897857ce82ed76eccddb7bed3e27629
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sat Oct 7 10:34:19 2023 +1100
+
+    Started Python Application
+
+commit 677808d6e8ab5a8a3a08c39c703f1dc123c0d354
+Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
+Date:   Sun Sep 3 23:08:10 2023 +1000
+
+    Create git_log.txt
+
 commit 96a80610b552eccc75c4db039b50befee9bd783f
 Author: NathanaelGazzard <nathanaelgazzard@gmail.com>
 Date:   Sun Sep 3 22:46:25 2023 +1000
