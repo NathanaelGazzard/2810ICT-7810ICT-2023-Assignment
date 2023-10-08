@@ -34,7 +34,7 @@ def populate_results_data():
 
         item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
 
-        for col_index, column_name in enumerate(data.columns[1:]):
+        for col_index, column_name in enumerate(data.columns):
             results_frame.m_listCtrl.SetItem(item_index, col_index, str(row[column_name]))
 
         item = wx.ListItem()
@@ -45,7 +45,6 @@ def populate_results_data():
     results_frame.display_matplotlib_figures(figures)
 
     return
-
 
 def set_visibility():
     if data is None:
@@ -84,22 +83,29 @@ def query_0():
     end_date = pd.to_datetime(end_date)
 
     filtered_data = restaurant_data[
-        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)].copy()
 
-    ###################################################### sample figures
-    fig1, ax1 = plt.subplots()
-    ax1.plot([1, 2, 3, 4, 5], [1, 4, 9, 16, 25])
-    ax1.set_title('Sample Plot 1')
+    figures.clear()
+
+    fig1, ax1 = plt.subplots(figsize=(8, 6))
+    inspection_counts = filtered_data['INSPECTION DATE'].value_counts().sort_index()
+    ax1.plot(inspection_counts.index, inspection_counts.values, marker='o', linestyle='-')
+    ax1.set_xlabel('Date')
+    ax1.set_ylabel('Number of Inspections')
+    ax1.set_title('Inspection Count Over Time')
     figures.append(fig1)
 
-    fig2, ax2 = plt.subplots()
-    ax2.scatter([1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
-    ax2.set_title('Sample Plot 2')
+    fig2, ax2 = plt.subplots(figsize=(8, 6))
+    filtered_data['SCORE'] = pd.to_numeric(filtered_data['SCORE'], errors='coerce')
+    filtered_data = filtered_data.dropna(subset=['SCORE'])
+    ax2.hist(filtered_data['SCORE'], bins=20, edgecolor='black')
+    ax2.set_xlabel('Inspection Score')
+    ax2.set_ylabel('Frequency')
+    ax2.set_title('Distribution of Inspection Scores')
     figures.append(fig2)
 
-    #####################################################################
-
     return filtered_data
+
 
 
 def query_1():
@@ -112,10 +118,21 @@ def query_1():
     filtered_data = restaurant_data[
         (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
 
-    filtered_data.sort_values(by='BORO', inplace=True)
+    sorted_data = filtered_data.copy()
+    sorted_data.sort_values(by='BORO', inplace=True)
 
-    return filtered_data
+    suburb_violation_counts = sorted_data.groupby('BORO')['VIOLATION CODE'].count().reset_index()
 
+    figures.clear()
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.bar(suburb_violation_counts['BORO'], suburb_violation_counts['VIOLATION CODE'])
+    ax.set_xlabel('Suburb (BORO)')
+    ax.set_ylabel('Number of Violations')
+    ax.set_title('Distribution of Violations by Suburb')
+    figures.append(fig)
+
+    return sorted_data
 
 def query_2(keyword):
     start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
@@ -131,14 +148,39 @@ def query_2(keyword):
          restaurant_data['CUISINE DESCRIPTION'].str.contains(keyword, case=False, na=False) |
          restaurant_data['VIOLATION DESCRIPTION'].str.contains(keyword, case=False, na=False))]
 
+    # Create figures for query 2
+    figures.clear()
+
+    # Figure 1: Number of Violations per DBA
+    dba_violation_counts = filtered_data['DBA'].value_counts().nlargest(10)  # Top 10 DBAs with most violations
+    fig1, ax1 = plt.subplots(figsize=(10, 6))
+    ax1.barh(dba_violation_counts.index, dba_violation_counts.values)
+    ax1.set_xlabel('Number of Violations')
+    ax1.set_ylabel('DBA')
+    ax1.set_title('Top 10 DBAs with Most Violations')
+    ax1.invert_yaxis()  # Invert y-axis for readability
+    figures.append(fig1)
+
+    # Figure 2: Frequency of Violations by BORO Over Time
+    suburb_violation_counts = filtered_data.groupby(['BORO', 'INSPECTION DATE']).size().reset_index(name='COUNT')
+    fig2, ax2 = plt.subplots(figsize=(10, 6))
+    for boro, data in suburb_violation_counts.groupby('BORO'):
+        ax2.plot(data['INSPECTION DATE'], data['COUNT'], label=boro)
+    ax2.set_xlabel('Date')
+    ax2.set_ylabel('Number of Violations')
+    ax2.set_title('Frequency of Violations by BORO Over Time')
+    ax2.legend()
+    figures.append(fig2)
+
     return filtered_data
+
 
 
 def query_3():
     # NOTE: due to the wording of the assignment, this function only checks for rats and mice, as all the other
     # "animals" may be colloquially referred to as bugs. Below is a more extensive list of animals commented-out.
     # This list was obtained by temporarily creating a function that output a list of unique words contained in the
-    # 'VIOLATION DESCRIPTION' column, then asking chatGPT to identify all the animals  in the list.
+    # 'VIOLATION DESCRIPTION' column, then asking chatGPT to identify all the animals in the list.
 
     # animals = ["rats", "mice", "flies", "roaches", "insects", "vermin"]
 
@@ -158,42 +200,88 @@ def query_3():
 
         filtered_data = pd.concat([filtered_data, animal_data], ignore_index=True)
 
+    figures.clear()
+
+    fig1, ax1 = plt.subplots(figsize=(8, 6))
+
+    grouped_data = filtered_data.groupby(['BORO', 'INSPECTION DATE']).size().reset_index(name='COUNT')
+
+    unique_boros = filtered_data['BORO'].unique()
+    for boro in unique_boros:
+        boro_data = grouped_data[grouped_data['BORO'] == boro]
+        ax1.plot(boro_data['INSPECTION DATE'], boro_data['COUNT'], label=boro)
+
+    ax1.set_xlabel('Date')
+    ax1.set_ylabel('Number of Violations')
+    ax1.set_title('Trend of Animal Violations Over Time by Suburb')
+    ax1.legend()
+    figures.append(fig1)
+
+    fig2, ax2 = plt.subplots(figsize=(8, 6))
+    suburb_violation_counts = filtered_data.groupby('BORO')['VIOLATION CODE'].count().reset_index()
+    ax2.bar(suburb_violation_counts['BORO'], suburb_violation_counts['VIOLATION CODE'])
+    ax2.set_xlabel('Suburb (BORO)')
+    ax2.set_ylabel('Number of Violations')
+    ax2.set_title('Distribution of Animal Violations by Suburb')
+    figures.append(fig2)
+
     return filtered_data
 
 
-def query_4():
-    filtered_data = restaurant_data.dropna(subset=['BORO', 'DBA', 'INSPECTION DATE', 'SCORE'])
+def query_4(n=3):
+    filtered_data_copy = restaurant_data.copy()
 
-    filtered_data['SCORE'] = pd.to_numeric(filtered_data['SCORE'], errors='coerce')
+    filtered_data_copy = filtered_data_copy.dropna(subset=['BORO', 'DBA', 'INSPECTION DATE', 'SCORE'])
 
-    filtered_data = filtered_data.dropna(subset=['SCORE'])
+    filtered_data_copy['SCORE'] = pd.to_numeric(filtered_data_copy['SCORE'], errors='coerce')
 
-    filtered_data['INSPECTION DATE'] = pd.to_datetime(filtered_data['INSPECTION DATE'])
+    filtered_data_copy = filtered_data_copy.dropna(subset=['SCORE'])
 
-    filtered_data['SCORE'] = pd.to_numeric(filtered_data['SCORE'], errors='coerce')
+    filtered_data_copy['INSPECTION DATE'] = pd.to_datetime(filtered_data_copy['INSPECTION DATE'])
 
-    filtered_data = filtered_data.dropna(subset=['SCORE'])
+    filtered_data_copy['SCORE'] = pd.to_numeric(filtered_data_copy['SCORE'], errors='coerce')
 
-    filtered_data.sort_values(by=['BORO', 'DBA', 'INSPECTION DATE'], ascending=[True, True, True], inplace=True)
+    filtered_data_copy = filtered_data_copy.dropna(subset=['SCORE'])
+
+    filtered_data_copy.sort_values(by=['BORO', 'DBA', 'INSPECTION DATE'], ascending=[True, True, True], inplace=True)
 
     top_10_results = pd.DataFrame()
 
-    for boro in filtered_data['BORO'].unique():
-        boro_data = filtered_data[filtered_data['BORO'] == boro].copy()
+    figures.clear()
+
+    borough_data_frames = []  # Create an empty list to store DataFrames for each borough
+
+    for boro in filtered_data_copy['BORO'].unique():
+        boro_data = filtered_data_copy[filtered_data_copy['BORO'] == boro].copy()
 
         boro_data['SCORE_DIFF'] = boro_data.groupby('DBA')['SCORE'].diff().fillna(0)
 
-        top_10_dba = boro_data.groupby('DBA')['SCORE_DIFF'].sum().nlargest(3).index.tolist()
+        top_10_dba = boro_data.groupby('DBA')['SCORE_DIFF'].sum().nlargest(n).index.tolist()
 
         top_10_boro_data = boro_data[boro_data['DBA'].isin(top_10_dba)]
 
         top_10_results = pd.concat([top_10_results, top_10_boro_data])
 
-    print("ATTENTION: query_4 (5th query) is currently set to only display the 3 DBAs with the greatest score increase "
-          "per boro, not the hundred most improved. It is unclear to me if a high score is a good or bad thing, though "
-          "it seems to be bad. As such, a final number and query name should be decided that suit the scope of the "
-          "dataset")
+        # Create a line plot for this borough
+        fig, ax = plt.subplots(figsize=(8, 6))
+        for dba, scores in top_10_boro_data.groupby('DBA'):
+            ax.plot(scores['INSPECTION DATE'], scores['SCORE'], label=dba)
+        ax.set_xlabel('Inspection Date')
+        ax.set_ylabel('Score')
+        ax.set_title(f'Top {n} Scores Over Time in {boro}')
+        ax.legend()
+
+        # Append the figure to the global list of figures
+        figures.append(fig)
+
+        # Append the DataFrame for this borough to the list
+        borough_data_frames.append(top_10_boro_data)
+
+    top_10_results.drop(columns=['SCORE_DIFF'], inplace=True)
+    print(len(figures))
+
     return top_10_results
+
 
 
 def view_current_query(event):
@@ -323,6 +411,7 @@ class ResultsFrame(wx.Frame):
 
         self.m_listCtrl = wx.ListCtrl(self.m_panel_data, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                                       wx.LC_REPORT | wx.BORDER_NONE)
+
 
         self.m_listCtrl.InsertColumn(0, "CAMIS")
         self.m_listCtrl.InsertColumn(1, "DBA")
