@@ -6,7 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
-
 pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
 restaurant_data['INSPECTION DATE'] = pd.to_datetime(restaurant_data['INSPECTION DATE'])
@@ -15,6 +14,7 @@ restaurant_data.fillna('', inplace=True)
 data = None
 current_query_number = None
 current_frame = None
+figures = []
 
 
 def populate_results_data():
@@ -30,19 +30,19 @@ def populate_results_data():
             background_color = wx.Colour(240, 240, 240)
         else:
             row_is_grey = True
-            background_color = wx.NullColour  # No background color
+            background_color = wx.NullColour
 
         item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
 
-        # Loop through the columns and set the item values
         for col_index, column_name in enumerate(data.columns[1:]):
             results_frame.m_listCtrl.SetItem(item_index, col_index, str(row[column_name]))
 
-        # Set the background color
         item = wx.ListItem()
         item.SetBackgroundColour(background_color)
         item.SetId(item_index)
         results_frame.m_listCtrl.SetItem(item)
+
+    results_frame.display_matplotlib_figures(figures)
 
     return
 
@@ -85,6 +85,19 @@ def query_0():
 
     filtered_data = restaurant_data[
         (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+
+    ###################################################### sample figures
+    fig1, ax1 = plt.subplots()
+    ax1.plot([1, 2, 3, 4, 5], [1, 4, 9, 16, 25])
+    ax1.set_title('Sample Plot 1')
+    figures.append(fig1)
+
+    fig2, ax2 = plt.subplots()
+    ax2.scatter([1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
+    ax2.set_title('Sample Plot 2')
+    figures.append(fig2)
+
+    #####################################################################
 
     return filtered_data
 
@@ -199,7 +212,7 @@ def change_query_form(event):
 
 def run_query(event):
     global data
-    # modify 'data' based on query
+
     if current_frame.m_choice1.GetSelection() == 0:
         data = query_0()
     elif current_frame.m_choice1.GetSelection() == 1:
@@ -211,7 +224,6 @@ def run_query(event):
     elif current_frame.m_choice1.GetSelection() == 4:
         data = query_4()
 
-    # put the data into the results page
     populate_results_data()
 
     event.Skip()
@@ -337,8 +349,11 @@ class ResultsFrame(wx.Frame):
         self.m_panel_data.Layout()
         bSizer3.Fit(self.m_panel_data)
         self.m_notebook_results.AddPage(self.m_panel_data, u"Query Results Data", True)
-        self.m_panel_visualization = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                                              wx.TAB_TRAVERSAL)
+
+        self.m_panel_visualization = wx.ScrolledWindow(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition,
+                                                       wx.DefaultSize, wx.TAB_TRAVERSAL)
+        self.m_panel_visualization.SetScrollRate(10, 10)
+
         self.m_notebook_results.AddPage(self.m_panel_visualization, u"Query Results Visualization", False)
 
         bSizer6.Add(self.m_notebook_results, 1, wx.EXPAND | wx.ALL, 5)
@@ -353,10 +368,21 @@ class ResultsFrame(wx.Frame):
     def __del__(self):
         pass
 
+    def display_matplotlib_figures(self, figures):
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        for figure in figures:
+            canvas = FigureCanvas(self.m_panel_visualization, -1, figure)
+
+            sizer.Add(canvas, 1, wx.EXPAND)
+
+        self.m_panel_visualization.SetSizerAndFit(sizer)
+
 
 if __name__ == "__main__":
     app = wx.App()
     home_frame = HomeFrame(None)
     home_frame.Show()
+    current_query_number = 0
     set_visibility()
     app.MainLoop()
