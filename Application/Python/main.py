@@ -14,6 +14,42 @@ current_query_number = None
 current_frame = None
 
 
+def populate_results_data():
+    current_frame.Hide()
+    results_frame = ResultsFrame(current_frame)
+    results_frame.Show()
+
+    for index, row in data.iterrows():
+        item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
+        results_frame.m_listCtrl.SetItem(item_index, 1, str(row['DBA']))
+        results_frame.m_listCtrl.SetItem(item_index, 2, str(row['BORO']))
+        results_frame.m_listCtrl.SetItem(item_index, 3, str(row['BUILDING']))
+        results_frame.m_listCtrl.SetItem(item_index, 4, str(row['STREET']))
+        results_frame.m_listCtrl.SetItem(item_index, 5, str(row['ZIPCODE']))
+        results_frame.m_listCtrl.SetItem(item_index, 6, str(row['PHONE']))
+        results_frame.m_listCtrl.SetItem(item_index, 7, str(row['CUISINE DESCRIPTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 8, str(row['INSPECTION DATE']))
+        results_frame.m_listCtrl.SetItem(item_index, 9, str(row['ACTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 10, str(row['VIOLATION CODE']))
+        results_frame.m_listCtrl.SetItem(item_index, 11, str(row['VIOLATION DESCRIPTION']))
+        results_frame.m_listCtrl.SetItem(item_index, 12, str(row['CRITICAL FLAG']))
+        results_frame.m_listCtrl.SetItem(item_index, 13, str(row['SCORE']))
+
+        if pd.isna(row['GRADE']):
+            results_frame.m_listCtrl.SetItem(item_index, 14, '')
+        else:
+            results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
+        if pd.isna(row['GRADE DATE']):
+            results_frame.m_listCtrl.SetItem(item_index, 15, '')
+        else:
+            results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
+
+        results_frame.m_listCtrl.SetItem(item_index, 16, str(row['RECORD DATE']))
+        results_frame.m_listCtrl.SetItem(item_index, 17, str(row['INSPECTION TYPE']))
+
+    return
+
+
 def set_visibility():
     if data is None:
         current_frame.m_button_currentQuery.Hide()
@@ -22,14 +58,14 @@ def set_visibility():
 
     if current_frame is None:
         return
-    elif current_query_number == 0:
+    elif current_query_number == 0 or current_query_number == 1:
         current_frame.m_label_startDate.Show()
         current_frame.m_datePicker_start.Show()
         current_frame.m_label_endDate.Show()
         current_frame.m_datePicker_end.Show()
         current_frame.m_label_keyword.Hide()
         current_frame.m_text_keyword.Hide()
-    elif current_query_number == 1 or current_query_number == 3 or current_query_number == 4:
+    elif current_query_number == 3 or current_query_number == 4:
         current_frame.m_label_startDate.Hide()
         current_frame.m_datePicker_start.Hide()
         current_frame.m_label_endDate.Hide()
@@ -54,6 +90,61 @@ def query_0():
 
     filtered_data = restaurant_data[
         (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+
+    return filtered_data
+
+
+def query_1():
+    # NOTE: this query assumes that the assignment description meant borough (BORO) when it refers to suburb.
+    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
+    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    filtered_data = restaurant_data[
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+
+    filtered_data.sort_values(by='BORO', inplace=True)
+
+    return filtered_data
+
+def query_2(keyword):
+    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
+    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    # NOTE: at present, I'm only checking the 3 fields that I felt were most relevant. We can expand this to search the
+    # other fields if needed
+    filtered_data = restaurant_data[
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date) &
+        (restaurant_data['DBA'].str.contains(keyword, case=False, na=False) |
+         restaurant_data['CUISINE DESCRIPTION'].str.contains(keyword, case=False, na=False) |
+         restaurant_data['VIOLATION DESCRIPTION'].str.contains(keyword, case=False, na=False))]
+
+    return filtered_data
+
+
+def query_3():
+    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
+    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    filtered_data = restaurant_data[
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+
+    return filtered_data
+
+def query_4():
+    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
+    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    filtered_data = restaurant_data[
+        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+
     return filtered_data
 
 
@@ -66,53 +157,29 @@ def view_current_query(event):
 
 def change_query_form(event):
     global current_query_number
-    current_query_number = current_frame.m_button_currentQuery.GetValue()
+    current_query_number = current_frame.m_choice1.GetSelection()
     set_visibility()
     event.Skip()
 
 
 def run_query(event):
+    global data
+    # modify 'data' based on query
     if current_frame.m_choice1.GetSelection() == 0:
-        global data
         data = query_0()
+    elif current_frame.m_choice1.GetSelection() == 1:
+        data = query_1()
+    elif current_frame.m_choice1.GetSelection() == 2:
+        data = query_2(current_frame.m_text_keyword.GetValue())
+    elif current_frame.m_choice1.GetSelection() == 3:
+        data = query_3()
+    elif current_frame.m_choice1.GetSelection() == 4:
+        data = query_4()
 
-    # remove any rows from the view. loop through data and generate row for each.
     print(len(data))
 
-    current_frame.Hide()
-    results_frame = ResultsFrame(current_frame)
-    results_frame.Show()
-
-    print(data.head())  # Print the first few rows of the DataFrame
-    print(data['CAMIS'])  # Print just the 'CAMIS' column
-
-    for index, row in data.iterrows():
-        item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
-        results_frame.m_listCtrl.SetItem(item_index, 1, str(row['DBA']))
-        results_frame.m_listCtrl.SetItem(item_index, 2, str(row['BORO']))
-        results_frame.m_listCtrl.SetItem(item_index, 3, str(row['BUILDING']))
-        results_frame.m_listCtrl.SetItem(item_index, 4, str(row['STREET']))
-        results_frame.m_listCtrl.SetItem(item_index, 5, str(row['ZIPCODE']))
-        results_frame.m_listCtrl.SetItem(item_index, 6, str(row['PHONE']))
-        results_frame.m_listCtrl.SetItem(item_index, 7, str(row['CUISINE DESCRIPTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 8, str(row['INSPECTION DATE']))
-        results_frame.m_listCtrl.SetItem(item_index, 9, str(row['ACTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 10, str(row['VIOLATION CODE']))
-        results_frame.m_listCtrl.SetItem(item_index, 11, str(row['VIOLATION DESCRIPTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 12, str(row['CRITICAL FLAG']))
-        results_frame.m_listCtrl.SetItem(item_index, 13, str(row['SCORE']))
-        
-        if pd.isna(row['GRADE']):
-            results_frame.m_listCtrl.SetItem(item_index, 14, '')
-        else:
-            results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
-        if pd.isna(row['GRADE DATE']):
-            results_frame.m_listCtrl.SetItem(item_index, 15, '')
-        else:
-            results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
-
-        results_frame.m_listCtrl.SetItem(item_index, 16, str(row['RECORD DATE']))
-        results_frame.m_listCtrl.SetItem(item_index, 17, str(row['INSPECTION TYPE']))
+    # put the data into the results page
+    populate_results_data()
 
     event.Skip()
 
@@ -233,18 +300,15 @@ class ResultsFrame(wx.Frame):
         self.m_listCtrl.InsertColumn(16, "RECORD DATE")
         self.m_listCtrl.InsertColumn(17, "INSPECTION TYPE")
 
-        # for i in range(30):
-        #    self.m_listCtrl.InsertItem(i, "")  # Insert an empty row
-
         bSizer3.Add(self.m_listCtrl, 1, wx.EXPAND | wx.ALL, 5)
 
         self.m_panel_data.SetSizer(bSizer3)
         self.m_panel_data.Layout()
         bSizer3.Fit(self.m_panel_data)
-        self.m_notebook_results.AddPage(self.m_panel_data, u"a page", True)
+        self.m_notebook_results.AddPage(self.m_panel_data, u"Query Results Data", True)
         self.m_panel_visualization = wx.Panel(self.m_notebook_results, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                                               wx.TAB_TRAVERSAL)
-        self.m_notebook_results.AddPage(self.m_panel_visualization, u"a page", False)
+        self.m_notebook_results.AddPage(self.m_panel_visualization, u"Query Results Visualization", False)
 
         bSizer6.Add(self.m_notebook_results, 1, wx.EXPAND | wx.ALL, 5)
 
