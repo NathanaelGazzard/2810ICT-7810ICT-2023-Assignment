@@ -7,11 +7,19 @@ import pandas as pd
 pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
 restaurant_data['INSPECTION DATE'] = pd.to_datetime(restaurant_data['INSPECTION DATE'])
+restaurant_data.fillna('', inplace=True)
 
-# These variables will be used globally for accessing data, form values, etc.
 data = None
 current_query_number = None
 current_frame = None
+
+
+def is_numeric(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 def populate_results_data():
@@ -19,7 +27,19 @@ def populate_results_data():
     results_frame = ResultsFrame(current_frame)
     results_frame.Show()
 
+    row_is_grey = False
+
     for index, row in data.iterrows():
+
+        if row_is_grey:
+            row_is_grey = False
+            item = wx.ListItem()
+            item.SetBackgroundColour(wx.Colour(240, 240, 240))
+            item.SetId(item_index)
+            results_frame.m_listCtrl.SetItem(item)
+        else:
+            row_is_grey = True
+
         item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
         results_frame.m_listCtrl.SetItem(item_index, 1, str(row['DBA']))
         results_frame.m_listCtrl.SetItem(item_index, 2, str(row['BORO']))
@@ -34,16 +54,8 @@ def populate_results_data():
         results_frame.m_listCtrl.SetItem(item_index, 11, str(row['VIOLATION DESCRIPTION']))
         results_frame.m_listCtrl.SetItem(item_index, 12, str(row['CRITICAL FLAG']))
         results_frame.m_listCtrl.SetItem(item_index, 13, str(row['SCORE']))
-
-        if pd.isna(row['GRADE']):
-            results_frame.m_listCtrl.SetItem(item_index, 14, '')
-        else:
-            results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
-        if pd.isna(row['GRADE DATE']):
-            results_frame.m_listCtrl.SetItem(item_index, 15, '')
-        else:
-            results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
-
+        results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
+        results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
         results_frame.m_listCtrl.SetItem(item_index, 16, str(row['RECORD DATE']))
         results_frame.m_listCtrl.SetItem(item_index, 17, str(row['INSPECTION TYPE']))
 
@@ -65,7 +77,14 @@ def set_visibility():
         current_frame.m_datePicker_end.Show()
         current_frame.m_label_keyword.Hide()
         current_frame.m_text_keyword.Hide()
-    elif current_query_number == 3 or current_query_number == 4:
+    elif current_query_number == 3:
+        current_frame.m_label_startDate.Show()
+        current_frame.m_datePicker_start.Show()
+        current_frame.m_label_endDate.Show()
+        current_frame.m_datePicker_end.Show()
+        current_frame.m_label_keyword.Hide()
+        current_frame.m_text_keyword.Hide()
+    elif current_query_number == 4:
         current_frame.m_label_startDate.Hide()
         current_frame.m_datePicker_start.Hide()
         current_frame.m_label_endDate.Hide()
@@ -108,6 +127,7 @@ def query_1():
 
     return filtered_data
 
+
 def query_2(keyword):
     start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
     end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
@@ -126,26 +146,61 @@ def query_2(keyword):
 
 
 def query_3():
+    # NOTE: due to the wording of the assignment, this function only checks for rats and mice, as all the other
+    # "animals" may be colloquially referred to as bugs. Below is a more extensive list of animals commented-out.
+    # This list was obtained by temporarily creating a function that output a list of unique words contained in the
+    # 'VIOLATION DESCRIPTION' column, then asking chatGPT to identify all the animals  in the list.
+
+    # animals = ["rats", "mice", "flies", "roaches", "insects", "vermin"]
+
+    animals = ["rats", "mice"]
+
     start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
     end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
     start_date = pd.to_datetime(start_date)
     end_date = pd.to_datetime(end_date)
 
-    filtered_data = restaurant_data[
-        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+    filtered_data = pd.DataFrame()
+
+    for animal in animals:
+        animal_data = restaurant_data[
+            (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date) &
+            (restaurant_data['VIOLATION DESCRIPTION'].str.contains(animal, case=False, na=False))]
+
+        filtered_data = pd.concat([filtered_data, animal_data], ignore_index=True)
 
     return filtered_data
+
 
 def query_4():
-    start_date = current_frame.m_datePicker_start.GetValue().FormatDate()
-    end_date = current_frame.m_datePicker_end.GetValue().FormatDate()
-    start_date = pd.to_datetime(start_date)
-    end_date = pd.to_datetime(end_date)
+    filtered_data = restaurant_data.dropna(subset=['BORO', 'DBA', 'INSPECTION DATE', 'SCORE'])
 
-    filtered_data = restaurant_data[
-        (restaurant_data['INSPECTION DATE'] >= start_date) & (restaurant_data['INSPECTION DATE'] <= end_date)]
+    filtered_data['SCORE'] = pd.to_numeric(filtered_data['SCORE'], errors='coerce')
 
-    return filtered_data
+    filtered_data = filtered_data.dropna(subset=['SCORE'])
+
+    filtered_data['INSPECTION DATE'] = pd.to_datetime(filtered_data['INSPECTION DATE'])
+
+    filtered_data['SCORE'] = pd.to_numeric(filtered_data['SCORE'], errors='coerce')
+
+    filtered_data = filtered_data.dropna(subset=['SCORE'])
+
+    filtered_data.sort_values(by=['BORO', 'DBA', 'INSPECTION DATE'], ascending=[True, True, True], inplace=True)
+
+    top_10_results = pd.DataFrame()
+
+    for boro in filtered_data['BORO'].unique():
+        boro_data = filtered_data[filtered_data['BORO'] == boro].copy()
+
+        boro_data['SCORE_DIFF'] = boro_data.groupby('DBA')['SCORE'].diff().fillna(0)
+
+        top_10_dba = boro_data.groupby('DBA')['SCORE_DIFF'].sum().nlargest(3).index.tolist()
+
+        top_10_boro_data = boro_data[boro_data['DBA'].isin(top_10_dba)]
+
+        top_10_results = pd.concat([top_10_results, top_10_boro_data])
+
+    return top_10_results
 
 
 def view_current_query(event):
@@ -175,8 +230,6 @@ def run_query(event):
         data = query_3()
     elif current_frame.m_choice1.GetSelection() == 4:
         data = query_4()
-
-    print(len(data))
 
     # put the data into the results page
     populate_results_data()
@@ -276,11 +329,9 @@ class ResultsFrame(wx.Frame):
                                      wx.TAB_TRAVERSAL)
         bSizer3 = wx.BoxSizer(wx.VERTICAL)
 
-        # Create a wx.ListCtrl to replace the wx.grid.Grid
         self.m_listCtrl = wx.ListCtrl(self.m_panel_data, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
                                       wx.LC_REPORT | wx.BORDER_NONE)
 
-        # Add columns to the ListCtrl
         self.m_listCtrl.InsertColumn(0, "CAMIS")
         self.m_listCtrl.InsertColumn(1, "DBA")
         self.m_listCtrl.InsertColumn(2, "BORO")
