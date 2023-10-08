@@ -3,6 +3,9 @@ import wx.xrc
 import wx.adv
 import wx.grid
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+
 
 pd.set_option('display.max_rows', None)
 restaurant_data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', header=0)
@@ -14,14 +17,6 @@ current_query_number = None
 current_frame = None
 
 
-def is_numeric(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
-
-
 def populate_results_data():
     current_frame.Hide()
     results_frame = ResultsFrame(current_frame)
@@ -30,34 +25,24 @@ def populate_results_data():
     row_is_grey = False
 
     for index, row in data.iterrows():
-
         if row_is_grey:
             row_is_grey = False
-            item = wx.ListItem()
-            item.SetBackgroundColour(wx.Colour(240, 240, 240))
-            item.SetId(item_index)
-            results_frame.m_listCtrl.SetItem(item)
+            background_color = wx.Colour(240, 240, 240)
         else:
             row_is_grey = True
+            background_color = wx.NullColour  # No background color
 
         item_index = results_frame.m_listCtrl.InsertItem(index, str(row['CAMIS']))
-        results_frame.m_listCtrl.SetItem(item_index, 1, str(row['DBA']))
-        results_frame.m_listCtrl.SetItem(item_index, 2, str(row['BORO']))
-        results_frame.m_listCtrl.SetItem(item_index, 3, str(row['BUILDING']))
-        results_frame.m_listCtrl.SetItem(item_index, 4, str(row['STREET']))
-        results_frame.m_listCtrl.SetItem(item_index, 5, str(row['ZIPCODE']))
-        results_frame.m_listCtrl.SetItem(item_index, 6, str(row['PHONE']))
-        results_frame.m_listCtrl.SetItem(item_index, 7, str(row['CUISINE DESCRIPTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 8, str(row['INSPECTION DATE']))
-        results_frame.m_listCtrl.SetItem(item_index, 9, str(row['ACTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 10, str(row['VIOLATION CODE']))
-        results_frame.m_listCtrl.SetItem(item_index, 11, str(row['VIOLATION DESCRIPTION']))
-        results_frame.m_listCtrl.SetItem(item_index, 12, str(row['CRITICAL FLAG']))
-        results_frame.m_listCtrl.SetItem(item_index, 13, str(row['SCORE']))
-        results_frame.m_listCtrl.SetItem(item_index, 14, str(row['GRADE']))
-        results_frame.m_listCtrl.SetItem(item_index, 15, str(row['GRADE DATE']))
-        results_frame.m_listCtrl.SetItem(item_index, 16, str(row['RECORD DATE']))
-        results_frame.m_listCtrl.SetItem(item_index, 17, str(row['INSPECTION TYPE']))
+
+        # Loop through the columns and set the item values
+        for col_index, column_name in enumerate(data.columns[1:]):
+            results_frame.m_listCtrl.SetItem(item_index, col_index, str(row[column_name]))
+
+        # Set the background color
+        item = wx.ListItem()
+        item.SetBackgroundColour(background_color)
+        item.SetId(item_index)
+        results_frame.m_listCtrl.SetItem(item)
 
     return
 
@@ -70,35 +55,26 @@ def set_visibility():
 
     if current_frame is None:
         return
-    elif current_query_number == 0 or current_query_number == 1:
+
+    if current_query_number in [0, 1, 2, 3]:
         current_frame.m_label_startDate.Show()
         current_frame.m_datePicker_start.Show()
         current_frame.m_label_endDate.Show()
         current_frame.m_datePicker_end.Show()
-        current_frame.m_label_keyword.Hide()
-        current_frame.m_text_keyword.Hide()
-    elif current_query_number == 3:
-        current_frame.m_label_startDate.Show()
-        current_frame.m_datePicker_start.Show()
-        current_frame.m_label_endDate.Show()
-        current_frame.m_datePicker_end.Show()
-        current_frame.m_label_keyword.Hide()
-        current_frame.m_text_keyword.Hide()
-    elif current_query_number == 4:
+    else:
         current_frame.m_label_startDate.Hide()
         current_frame.m_datePicker_start.Hide()
         current_frame.m_label_endDate.Hide()
         current_frame.m_datePicker_end.Hide()
-        current_frame.m_label_keyword.Hide()
-        current_frame.m_text_keyword.Hide()
-    else:
-        current_frame.m_label_startDate.Show()
-        current_frame.m_datePicker_start.Show()
-        current_frame.m_label_endDate.Show()
-        current_frame.m_datePicker_end.Show()
+
+    if current_query_number == 2:
         current_frame.m_label_keyword.Show()
         current_frame.m_text_keyword.Show()
-        return
+    else:
+        current_frame.m_label_keyword.Hide()
+        current_frame.m_text_keyword.Hide()
+
+    return
 
 
 def query_0():
@@ -200,6 +176,10 @@ def query_4():
 
         top_10_results = pd.concat([top_10_results, top_10_boro_data])
 
+    print("ATTENTION: query_4 (5th query) is currently set to only display the 3 DBAs with the greatest score increase "
+          "per boro, not the hundred most improved. It is unclear to me if a high score is a good or bad thing, though "
+          "it seems to be bad. As such, a final number and query name should be decided that suit the scope of the "
+          "dataset")
     return top_10_results
 
 
